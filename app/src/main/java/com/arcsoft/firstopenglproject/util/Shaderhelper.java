@@ -12,40 +12,40 @@ public class Shaderhelper {
 
     private static final String TAG = "Shaderhelper";
 
-    public static int compileVertexShader(String shaderCode){
-        return compileShader(GL_VERTEX_SHADER,shaderCode);
+    public static int compileVertexShader(String shaderCode) {
+        return compileShader(GL_VERTEX_SHADER, shaderCode);
     }
 
-    public static int compileFragmentShader(String shaderCode){
-        return compileShader(GL_FRAGMENT_SHADER,shaderCode);
+    public static int compileFragmentShader(String shaderCode) {
+        return compileShader(GL_FRAGMENT_SHADER, shaderCode);
     }
 
-    private static int compileShader(int type,String shaderCode){
+    private static int compileShader(int type, String shaderCode) {
 
         final int shaderObjectId = glCreateShader(type);
 
-        if(shaderObjectId==0){
-            LoggerConfig.w(TAG,"create sahder failed.");
+        if (shaderObjectId == 0) {
+            LoggerConfig.w(TAG, "create sahder failed.");
 
             return 0;
         }
 
-        glShaderSource(shaderObjectId,shaderCode);
+        glShaderSource(shaderObjectId, shaderCode);
 
         glCompileShader(shaderObjectId);
 
         final int[] compileStatue = new int[1];
-        glGetShaderiv(shaderObjectId,GL_COMPILE_STATUS,compileStatue,0);
+        glGetShaderiv(shaderObjectId, GL_COMPILE_STATUS, compileStatue, 0);
 
-        LoggerConfig.i(TAG,"Results of compile resource : "+ type + " \n" +
+        LoggerConfig.i(TAG, "Results of compile resource : " + type + " \n" +
                 "  " + glGetShaderInfoLog(shaderObjectId)
         );
 
 
-        if(compileStatue[0]==0){
+        if (compileStatue[0] == 0) {
             glDeleteShader(shaderObjectId);
 
-            LoggerConfig.w(TAG,"compilation of shader failed");
+            LoggerConfig.w(TAG, "compilation of shader failed");
 
             return 0;
         }
@@ -53,29 +53,29 @@ public class Shaderhelper {
         return shaderObjectId;
     }
 
-    public static int linkProgram(int vertexShaderId, int fragmentShaderId){
+    public static int linkProgram(int vertexShaderId, int fragmentShaderId) {
 
         final int programeObjectId = glCreateProgram();
 
-        if(programeObjectId==0){
-            LoggerConfig.w(TAG,"Could not create new Program");
+        if (programeObjectId == 0) {
+            LoggerConfig.w(TAG, "Could not create new Program");
 
             return 0;
         }
 
-        glAttachShader(programeObjectId,vertexShaderId);
-        glAttachShader(programeObjectId,fragmentShaderId);
+        glAttachShader(programeObjectId, vertexShaderId);
+        glAttachShader(programeObjectId, fragmentShaderId);
 
         glLinkProgram(programeObjectId);
 
-        final int[] linkStatus= new int[1];
+        final int[] linkStatus = new int[1];
 
-        glGetProgramiv(programeObjectId,GL_LINK_STATUS,linkStatus,0);
+        glGetProgramiv(programeObjectId, GL_LINK_STATUS, linkStatus, 0);
 
-        if(linkStatus[0]==0){
+        if (linkStatus[0] == 0) {
             glDeleteProgram(programeObjectId);
 
-            LoggerConfig.w(TAG,"linking of program failed");
+            LoggerConfig.w(TAG, "linking of program failed");
 
             return 0;
         }
@@ -83,18 +83,32 @@ public class Shaderhelper {
         return programeObjectId;
     }
 
-    public static boolean validateProgram(int programId){
+    public static boolean validateProgram(int programId) {
 
         glValidateProgram(programId);
 
         final int[] validateStatus = new int[1];
 
-        glGetProgramiv(programId,GL_VALIDATE_STATUS,validateStatus,0);
+        glGetProgramiv(programId, GL_VALIDATE_STATUS, validateStatus, 0);
 
-        LoggerConfig.i(TAG,"Results of validating program : " + validateStatus[0] +"\n"+
-            "and Log : " + glGetProgramInfoLog(programId)
+        LoggerConfig.i(TAG, "Results of validating program : " + validateStatus[0] + "\n" +
+                "and Log : " + glGetProgramInfoLog(programId)
         );
 
-        return validateStatus[0]!=0;
+        return validateStatus[0] != 0;
+    }
+
+    public static int buildProgram(String vertexShaderSource,
+                                   String fragmentShaderSource) {
+        int program;
+        // Compile the shaders.
+        int vertexShader = compileVertexShader(vertexShaderSource);
+        int fragmentShader = compileFragmentShader(fragmentShaderSource);
+        // Link them into a shader program.
+        program = linkProgram(vertexShader, fragmentShader);
+        if (LoggerConfig.ON) {
+            validateProgram(program);
+        }
+        return program;
     }
 }
