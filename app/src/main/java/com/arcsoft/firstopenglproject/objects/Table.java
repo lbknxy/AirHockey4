@@ -1,7 +1,10 @@
 package com.arcsoft.firstopenglproject.objects;
 
+import android.opengl.GLES20;
+
 import com.arcsoft.firstopenglproject.Constants;
 import com.arcsoft.firstopenglproject.data.VertexArray;
+import com.arcsoft.firstopenglproject.programs.TextureShaderProgram;
 
 /**
  * Created by Administrator on 2016/9/29.
@@ -13,17 +16,17 @@ public class Table {
     private static final int STRIDE = (POSITION_COMPONENT_COUNT
             + TEXTURE_COORDINATES_COMPONENT_COUNT) * Constants.BYTE_PER_FLOAT;
 
-    private  VertexArray vertexArray;
+    private VertexArray vertexArray;
 
     private static final float[] VERTEX_DATA = {
-        // Order of coordinates: X, Y, S, T
-        // Triangle Fan
-            0f,     0f,     0.5f,   0.5f,
-            -0.5f,  -0.8f,  0f,     0.9f,
-            0.5f,   -0.8f,  1f,     0.9f,
-            0.5f,   0.8f,   1f,     0.1f,
-            -0.5f,  0.8f,   0f,     0.1f,
-            -0.5f,  -0.8f,  0f,     0.9f
+            // Order of coordinates: X, Y, S, T
+            // Triangle Fan
+            0f, 0f, 0.5f, 0.5f,
+            -0.5f, -0.8f, 0f, 0.9f,
+            0.5f, -0.8f, 1f, 0.9f,
+            0.5f, 0.8f, 1f, 0.1f,
+            -0.5f, 0.8f, 0f, 0.1f,
+            -0.5f, -0.8f, 0f, 0.9f
     };
 
     public Table() {
@@ -38,12 +41,12 @@ public class Table {
                 STRIDE);
         vertexArray.setVertexAttribPointer(
                 POSITION_COMPONENT_COUNT,
-                textureProgram.getTextureCoordinatesAttributeLocation(),
+                textureProgram.getaTextureCoordinatesLocation(),
                 TEXTURE_COORDINATES_COMPONENT_COUNT,
                 STRIDE);
     }
 
     public void draw() {
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_FAN, 0, 6);
     }
 }
